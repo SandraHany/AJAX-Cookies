@@ -26,7 +26,6 @@ public class StarredModel : PageModel
         _rssListService.PrintListJson();
         var likedItemGuids = Request.Cookies["liked"]?.Split("_") ?? new string[0];
         var rssListStarred = new List<RssModelClass>();
-
         foreach (var rss in _rssListService.RssListGlobal)
         {
             var starredItems = new List<RssItem>();
@@ -61,36 +60,6 @@ public class StarredModel : PageModel
         RssListStarred = rssListStarred;
         TotalItemCount = RssListStarred.Count();
         return Page();
-    }
-    [HttpPost]
-    public IActionResult OnPostToggleStarred(string guid, bool isStarred)
-    {
-        var item = FindItemByGuid(guid);
-        if (item != null)
-        {
-            item.IsStarred = isStarred;
-            var existingRssModel = _rssListService.RssListGlobal.FirstOrDefault(r => r.Items.Any(i => i.Guid == item.Guid));
-            if (existingRssModel != null)
-            {
-                existingRssModel.Items.First(i => i.Guid == item.Guid).IsStarred = item.IsStarred;
-                int index = _rssListService.RssListGlobal.FindIndex(r => r.Items.Any(i => i.Guid == item.Guid));
-                _rssListService.RssListGlobal[index] = existingRssModel;
-            }
-            return new JsonResult(new { isStarred });
-        }
-        return NotFound();
-    }
-    private RssItem FindItemByGuid(string guid)
-    {
-        foreach (var rss in _rssListService.RssListGlobal)
-        {
-            var item = rss.Items.FirstOrDefault(i => i.Guid == guid);
-            if (item != null)
-            {
-                return item;
-            }
-        }
-        return null;
     }
 }
 

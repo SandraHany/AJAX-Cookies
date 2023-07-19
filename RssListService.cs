@@ -23,6 +23,18 @@ namespace CookiesOpml
             var jsonString = JsonSerializer.Serialize(RssListGlobal);
             File.WriteAllText("output.json", jsonString);
         }
+        public RssItem FindItemByGuid(string guid)
+        {
+            foreach (var rss in RssListGlobal)
+            {
+                var item = rss.Items.FirstOrDefault(i => i.Guid == guid);
+                if (item != null)
+                {
+                    return item;
+                }
+            }
+            return null;
+        }
 
     }
 }
